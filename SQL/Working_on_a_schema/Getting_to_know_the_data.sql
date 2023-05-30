@@ -306,8 +306,118 @@ select first_name, last_name
 	from customer
     where last_name like "_A%W%";
 
+-- QUERYING MULTIPLE TABLES
+
+-- definitions for the customer and address tables
+
+desc customer;
+
+desc address;
+
+-- Inner join
+
+select c.first_name, c.last_name, a.address
+from customer c inner join address a
+on c.address_id = a.address_id;
+
+-- If the names of the columns used to join the two tables are identical we can use "using"
+
+select c.first_name, c.last_name, a.address
+from customer c inner join address a
+using (address_id);
 
 
+SELECT c.first_name, c.last_name, a.address
+	FROM customer c inner join address a
+	on  c.address_id = a.address_id
+	where a.postal_code = 52137;
+    
+-- Joining three or more tables
+
+SELECT c.first_name, c.last_name, ct.city
+	FROM customer c
+	INNER JOIN address a
+	ON c.address_id = a.address_id
+	INNER JOIN city ct
+	ON a.city_id = ct.city_id;
+    
+-- Subqueries as tables
+
+-- The subquery, which starts on line 4 and is given the alias addr, finds all addresses that are in California.
+ 
+select c.first_name, c.last_name, addr.address, addr.city
+	from customer c
+    inner join 
+    (select a.address_id, a.address, ct.city
+    from address a
+    inner join city ct
+    on a.city_id = ct.city_id
+    where a.district = "California"
+    ) addr
+    on c.address_id = addr.address_id;
+    
+-- using the same table twice
+
+select f.title
+from film f
+inner join film_actor fa
+on f.film_id = fa.film_id
+inner join actor a 
+on fa.actor_id = a.actor_id
+where ((a.first_name = " CATE" AND a.last_name = "MCQUEEN") 
+OR (a.first_name = "CUBA" AND a.last_name = "BIRCH"));
+
+
+-- query that requires the use of table aliases, since the same tables are used multiple times.
+SELECT f.title
+	FROM film f
+	INNER JOIN film_actor fa1
+	ON f.film_id = fa1.film_id
+	INNER JOIN actor a1
+	ON fa1.actor_id = a1.actor_id
+	INNER JOIN film_actor fa2
+	ON f.film_id = fa2.film_id
+	INNER JOIN actor a2
+	ON fa2.actor_id = a2.actor_id
+	WHERE (a1.first_name = 'CATE' AND a1.last_name = 'MCQUEEN')
+	AND (a2.first_name = 'CUBA' AND a2.last_name = 'BIRCH');
+    
+-- EXERCISE
+-- Find name, last name, address and city = California
+SELECT c.first_name, c.last_name, a.address, ct.city
+	FROM customer c
+	INNER JOIN address a
+	ON c.address_id = a.address_id
+	INNER JOIN city ct
+	ON a.city_id = ct.city_id
+	WHERE a.district = 'California';
+    
+/* Write a query that returns the title of every film in which an actor with the first  
+name JOHN appeared
+*/
+select f.title
+from film f 
+inner join film_actor fa
+on f.film_id = fa.film_id
+inner join actor a
+on fa.actor_id = a.actor_id
+where a.first_name = "John";
+
+/*
+Construct a query that returns all addresses that are in the same city. You
+will need to join the address table to itself, and each row should include
+two different addresses.
+*/
+-- SELF JOIN
+
+select a.address, ad.address, a.city_id
+from address a
+inner join address ad
+on a.city_id = ad.city_id
+and a.address_id <> ad.address_id;
+
+
+    
 
 
 
