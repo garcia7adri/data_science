@@ -416,11 +416,52 @@ inner join address ad
 on a.city_id = ad.city_id
 and a.address_id <> ad.address_id;
 
+-- WORKING WITH SETS
 
+SELECT c.first_name, c.last_name
+	FROM customer c
+	WHERE c.first_name LIKE 'J%' AND c.last_name LIKE 'D%'
+	UNION
+	SELECT a.first_name, a.last_name
+	FROM actor a
+	WHERE a.first_name LIKE 'J%' AND a.last_name LIKE 'D%';
     
+-- Sorting Compound Query Results
+
+SELECT a.first_name fname, a.last_name lname
+	FROM actor a
+	WHERE a.first_name LIKE 'J%' AND a.last_name LIKE 'D%'
+	UNION ALL
+	SELECT c.first_name, c.last_name
+	FROM customer c
+	WHERE c.first_name LIKE 'J%' AND c.last_name LIKE 'D%'
+	ORDER BY lname, fname;
+
+-- Set Operation Precedence
+
+SELECT a.first_name, a.last_name
+	FROM actor a
+	WHERE a.first_name LIKE 'J%' AND a.last_name LIKE 'D%'
+	UNION ALL
+	SELECT a.first_name, a.last_name
+	FROM actor a
+	WHERE a.first_name LIKE 'M%' AND a.last_name LIKE 'T%'
+	UNION
+	SELECT c.first_name, c.last_name
+	FROM customer c
+	WHERE c.first_name LIKE 'J%' AND c.last_name LIKE 'D%';
 
 
-
+/* Write a compound query that finds the first and last names of all actors
+and customers whose last name starts with L  and sort by last name*/
+SELECT a.first_name, a.last_name
+	FROM actor a
+	WHERE a.last_name LIKE 'L%'
+	UNION ALL
+	SELECT c.first_name, c.last_name
+	FROM customer c
+	WHERE c.last_name LIKE 'L%'
+    order by last_name;
 
 
     
