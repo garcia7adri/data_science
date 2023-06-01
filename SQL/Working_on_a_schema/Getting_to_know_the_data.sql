@@ -462,9 +462,266 @@ SELECT a.first_name, a.last_name
 	FROM customer c
 	WHERE c.last_name LIKE 'L%'
     order by last_name;
+    
+-- Data Generation, Manipulation, and Conversion
+
+CREATE TABLE string_tbl
+(char_fld CHAR(30),
+vchar_fld VARCHAR(30),
+text_fld TEXT
+);
+
+INSERT INTO string_tbl (char_fld, vchar_fld, text_fld)
+	VALUES ('This is char data',
+	'This is varchar data',
+	'This is text data');
+
+SELECT vchar_fld
+	FROM string_tbl;
+    
+-- String Manipulation 
 
 
+INSERT INTO string_tbl (char_fld, vchar_fld, text_fld)
+	VALUES ('This string is 28 characters',
+	'This string is 28 characters',
+	'This string is 28 characters');
     
-    
-    
+SELECT *
+from  string_tbl;
 
+-- STRING FUNCTIONS THAT RETURN NUMBERS
+
+-- length() function, which returns the number of characters in the string
+
+SELECT LENGTH(char_fld) char_length,
+	LENGTH(vchar_fld) varchar_length,
+	LENGTH(text_fld) text_length
+	FROM string_tbl;
+    
+ -- find the location of a substring within a string   
+ 
+SELECT POSITION('characters' IN vchar_fld)
+	FROM string_tbl;
+
+-- start the search at something other than the first character of the target string   
+  
+SELECT LOCATE('is', vchar_fld, 5)
+	FROM string_tbl;
+
+-- string comparison function strcmp(). strcmp()
+/*
+−1 if the first string comes before the second string in sort order
+0 if the strings are identical
+1 if the first string comes after the second string in sort order*/
+
+
+INSERT INTO string_tbl(vchar_fld)
+	VALUES ('abcd'),
+	('xyz'),
+	('QRSTUV'),
+	('qrstuv'),
+	('12345');    
+
+SELECT vchar_fld
+	FROM string_tbl
+	ORDER BY vchar_fld;
+
+SELECT STRCMP('12345','12345') 12345_12345,
+	STRCMP('abcd','xyz') abcd_xyz,
+	STRCMP('abcd','QRSTUV') abcd_QRSTUV,
+	STRCMP('qrstuv','QRSTUV') qrstuv_QRSTUV,
+	STRCMP('12345','xyz') 12345_xyz,
+	STRCMP('xyz','qrstuv') xyz_qrstuv;
+    
+-- like and regexp operators to compare strings in the select clause. Such comparisons will yield 1 (for true) or 0 (for false). 
+
+SELECT name, name LIKE '%y' ends_in_y
+	FROM category;
+    
+SELECT name, name REGEXP 'y$' ends_in_y
+	FROM category;
+    
+-- STRING FUNCTIONS THAT RETURN STRINGS
+select *
+from string_tbl;
+
+truncate string_tbl;
+delete from string_tbl;
+
+INSERT INTO string_tbl (text_fld)
+VALUES ('This string was 29 characters');
+
+-- contat() function
+
+UPDATE string_tbl
+	SET text_fld = CONCAT(text_fld, ', but now it is longer');
+
+SELECT text_fld
+	FROM string_tbl;
+    
+SELECT concat(first_name, ' ', last_name,
+	' has been a customer since ', date(create_date)) cust_narrative
+	FROM customer;
+    
+-- insert() function
+/* takes four arguments: the
+original string, the position at which to start, the number of characters to
+replace, and the replacement string. */
+
+SELECT INSERT('goodbye world', 9, 0, 'cruel ') string;
+
+SELECT INSERT('goodbye world', 1, 7, 'hello') string;
+
+-- extract a substring from a string
+SELECT SUBSTRING('goodbye cruel world', 9, 5);
+
+-- WORKING WITH NUMERICAL DATA
+
+SELECT (37 * 59) / (78 - (8 * 6));
+
+-- Performing Arithmetic Functions
+
+/*
+acos( x ) Calculates the arc cosine of x
+asin( x ) Calculates the arc sine of x
+atan( x ) Calculates the arc tangent of x
+cos( x ) Calculates the cosine of x
+cot( x ) Calculates the cotangent of x
+exp( x ) Calculates e^x
+ln( x ) Calculates the natural log of x
+sin( x ) Calculates the sine of x
+sqrt( x ) Calculates the square root of x
+tan( x ) Calculates the tangent of x
+*/
+
+SELECT MOD(10,4);
+
+SELECT MOD(22.75, 5);
+
+SELECT POW(2,8);
+
+SELECT POW(2,10) kilobyte, POW(2,20) megabyte,
+POW(2,30) gigabyte, POW(2,40) terabyte;
+
+-- Controlling Number Precision
+
+-- ceil(), floor(), round(), and truncate()
+SELECT CEIL(72.445), FLOOR(72.445);
+
+SELECT ROUND(72.49999), ROUND(72.5), ROUND(72.50001);
+
+SELECT ROUND(72.0909, 1), ROUND(72.0909, 2), ROUND(72.0909, 3);
+
+SELECT TRUNCATE(72.0909, 1), TRUNCATE(72.0909, 2),
+	TRUNCATE(72.0909, 3);
+    
+-- Handling Signed Data
+
+create table account 
+(account_id int,
+acct_type varchar(100),
+balance decimal);
+
+insert into account (account_id, acct_type, balance )
+values (123 , "MONEY MARKET" , 785.22);
+
+insert into account (account_id, acct_type, balance )
+values (456, "SAVINGS" , 0.00);
+
+insert into account (account_id, acct_type, balance )
+values (789, "CHECKING", -324.22);
+
+select *
+from account;
+
+/* report showing the current status of a set of bank accounts
+using the following data from the account table*/
+
+SELECT account_id, SIGN(balance), ABS(balance)
+	FROM account;
+/* Output of table above. 
+Second column: −1 if the account balance is negative, 0 if the account balance is zero, and 1 if the account
+balance is positive. 
+Third column: returns the absolute value of the account balance via the abs() function. */
+
+-- Working with Temporal Data
+
+-- Dealing with Time Zones
+-- a global time zone and a session time zone
+
+SELECT @@global.time_zone, @@session.time_zone;
+
+-- STRING REPRESENTATIONS OF TEMPORAL DATA
+
+-- STRING-TO-DATE CONVERSIONS
+-- returns a datetime value using the cast() function
+SELECT CAST('2019-09-17 15:30:00' AS DATETIME);
+-- cast() function to generate a date value and a time value
+
+SELECT CAST('2019-09-17' AS DATE) date_field,
+	CAST('108:17:57' AS TIME) time_field;
+    
+-- FUNCTIONS FOR GENERATING DATES
+
+-- str_to_date(), allows to provide a format string along with the date string
+
+UPDATE rental
+SET return_date = STR_TO_DATE('September 17, 2019', '%M %d, %Y')
+WHERE rental_id = 99999;
+
+-- generate the current date/time
+
+SELECT CURRENT_DATE(), CURRENT_TIME(), CURRENT_TIMESTAMP();
+
+-- Manipulating Temporal Data
+-- TEMPORAL FUNCTIONS THAT RETURN DATES
+-- date_add() function allows to add any kind of interval
+
+SELECT DATE_ADD(CURRENT_DATE(), INTERVAL 5 DAY);
+
+-- to add 9 years and 11 months to employee's birth date
+UPDATE employee
+SET birth_date = DATE_ADD(birth_date, INTERVAL '9-11' YEAR_MONTH)
+WHERE emp_id = 4789;
+
+-- find the last day of September 
+
+SELECT LAST_DAY('2019-09-17');
+
+-- TEMPORAL FUNCTIONS THAT RETURN STRINGS
+
+-- determine which day of the week a certain date falls on
+
+SELECT DAYNAME('2019-09-18');
+
+-- to extract just the year portion of a datetime value using extract()
+SELECT EXTRACT(YEAR FROM '2019-09-18 22:19:05');
+
+-- TEMPORAL FUNCTIONS THAT RETURN NUMBERS
+-- datediff() returns the number of full days between two dates
+
+SELECT DATEDIFF('2019-09-03', '2019-06-21');
+
+-- Conversion Functions
+-- string to an integer
+SELECT CAST('1456328' AS SIGNED INTEGER);
+
+-- when finding a non-number character in the string
+SELECT CAST('999ABC111' AS UNSIGNED INTEGER);
+show warnings;
+
+-- Exercise
+
+/* Write a query that returns the 17th through 25th characters of the string
+'Please find the substring in this string'. */
+
+select substring('Please find the substring in this string', 17,9);
+
+/* Write a query that returns the absolute value and sign (−1, 0, or 1) of the
+number −25.76823. Also return the number rounded to the nearest
+hundredth. */
+select abs(-25.76823), sign(-25.76823), round( -25.76823);
+
+/* Write a query to return just the month portion of the current date. */
+select extract(month from current_date());
