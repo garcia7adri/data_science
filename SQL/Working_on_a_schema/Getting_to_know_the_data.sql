@@ -725,3 +725,146 @@ select abs(-25.76823), sign(-25.76823), round( -25.76823);
 
 /* Write a query to return just the month portion of the current date. */
 select extract(month from current_date());
+
+create table test (
+id int,
+nombre varchar(50),
+parent int)
+
+-- delete from test;
+
+insert into test (id, nombre, parent)
+values ("1", "manzana", "3");
+
+insert into test (id, nombre, parent)
+values ("2", "pera", "1");
+
+insert into test (id, nombre, parent)
+values ("3", "cereza", "2");
+
+select t.id, t.nombre as child, t.parent as id_of_parent, tt.nombre as parent, tt.id
+from test t
+inner join test tt
+where tt.id = t.parent;
+
+-- Grouping by aggregate
+
+SELECT customer_id
+	FROM rental
+	GROUP BY customer_id;
+
+SELECT customer_id, count(*)
+	FROM rental
+	GROUP BY customer_id;
+    
+SELECT customer_id, count(*)
+	FROM rental
+	GROUP BY customer_id
+	ORDER BY 2 DESC;
+    
+SELECT customer_id, count(*)
+	FROM rental
+	GROUP BY customer_id
+	HAVING count(*) >= 40;
+    
+SELECT MAX(amount) max_amt,
+	MIN(amount) min_amt,
+	AVG(amount) avg_amt,
+	SUM(amount) tot_amt,
+	COUNT(*) num_payments
+	FROM payment;
+    
+-- Implicit Versus Explicit Groups
+
+SELECT customer_id,
+	MAX(amount) max_amt,
+	MIN(amount) min_amt,
+	AVG(amount) avg_amt,
+	SUM(amount) tot_amt,
+	COUNT(*) num_payments
+	FROM payment
+	GROUP BY customer_id;
+    
+    -- Counting Distinct Values
+SELECT COUNT(customer_id) num_rows,
+	COUNT(DISTINCT customer_id) num_customers
+	FROM payment;
+    
+-- Using Expressions
+-- the maximum number of days between when a film was rented and subsequently returned
+SELECT MAX(datediff(return_date,rental_date))
+	FROM rental;
+    
+-- How Nulls Are Handled
+
+/* count(*) counts the number of rows, whereas count(column) counts
+the number of values contained in the val column and ignores any null
+values encountered.*/
+
+-- Generating Groups
+
+-- Single-Column Grouping
+
+-- number of films associated with each actor
+SELECT actor_id, count(*)
+	FROM film_actor
+	GROUP BY actor_id;
+    
+-- Multicolumn Grouping
+-- number of films for each film rating (G, PG, ...) for each actor
+
+SELECT fa.actor_id, f.rating, count(*)
+	FROM film_actor fa
+	INNER JOIN film f
+	ON fa.film_id = f.film_id
+	GROUP BY fa.actor_id, f.rating
+	ORDER BY 1,2;
+    
+-- Grouping via Expressions
+-- rentals by year
+
+SELECT extract(YEAR FROM rental_date) year,
+	COUNT(*) how_many
+	FROM rental
+	GROUP BY extract(YEAR FROM rental_date);
+    
+-- Generating Rollups
+
+SELECT fa.actor_id, f.rating, count(*)
+	FROM film_actor fa
+	INNER JOIN film f
+	ON fa.film_id = f.film_id
+	GROUP BY fa.actor_id, f.rating WITH ROLLUP
+	ORDER BY 1,2;
+    
+-- Group Filter Conditions
+
+SELECT fa.actor_id, f.rating, count(*)
+	FROM film_actor fa
+	INNER JOIN film f
+	ON fa.film_id = f.film_id
+	WHERE f.rating IN ('G','PG')
+	GROUP BY fa.actor_id, f.rating
+	HAVING count(*) > 9;
+    
+-- EXERCISE
+
+-- Construct a query that counts the number of rows in the payment table.
+SELECT COUNT(*)
+FROM payment;
+
+/* Modify your query to count the number of payments
+made by each customer. Show the customer ID and the total amount paid
+for each customer.*/
+
+select customer_id, count(amount), sum(amount)
+	from payment
+    group by customer_id;
+    
+/* Modify your query, include only those customers who
+have made at least 40 payments.*/
+
+select customer_id, count(*), sum(amount)
+	from payment
+    group by customer_id
+    having count(*)>=40;
