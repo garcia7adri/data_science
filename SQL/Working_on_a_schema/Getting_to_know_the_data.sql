@@ -1022,3 +1022,45 @@ SELECT c.first_name, c.last_name
 	(SELECT 1 FROM rental r
 	WHERE r.customer_id = c.customer_id
 	AND date(r.rental_date) < '2005-05-25');
+
+create table test2 (
+
+nombre varchar(50),
+ventas int);
+
+-- delete from test;
+
+insert into test2 (nombre, ventas)
+values ("camila", "30");
+
+insert into test2 (nombre, ventas)
+values ("pedro", "10");
+
+insert into test2 (nombre, ventas)
+values ("pablo", "22");
+
+insert into test2 (nombre, ventas)
+values ("camila", "70");
+
+
+select nombre, avg(ventas)
+from test2
+group by nombre
+having avg(ventas)
+limit 1;
+
+-- Data Manipulation Using Correlated Subqueries
+
+UPDATE customer c
+SET c.last_update =
+(SELECT max(r.rental_date) FROM rental r
+WHERE r.customer_id = c.customer_id);
+
+UPDATE customer c
+SET c.last_update =
+(SELECT max(r.rental_date) FROM rental r
+WHERE r.customer_id = c.customer_id)
+WHERE EXISTS
+(SELECT 1 FROM rental r
+WHERE r.customer_id = c.customer_id);
+
